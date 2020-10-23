@@ -19,7 +19,7 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size,
 
 
 
-long postputToWeb(std::string &buffer,const std::string& content, const char *path,const char* method/*POST/PUT*/ ){
+long postputToWeb(std::string &buffer,const std::string& content, const char *path,const char* method/*POST/PUT*/, long timeout=60){
 
 
   long response_code;
@@ -44,7 +44,13 @@ long postputToWeb(std::string &buffer,const std::string& content, const char *pa
 
     res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
-    } else {
+    }
+    else if (CURLE_OPERATION_TIMEDOUT == res){
+
+
+
+
+    }else {
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     }
 

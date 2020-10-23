@@ -446,6 +446,13 @@ webGetStatus(mods::WorkflowExecutor::WorkflowExecutorWebParameters &wfpm) {
 
     wfexe::statusWebJob msgWeb= nlohmann::json::parse(buffer);
     std::cerr << "buffer: " << buffer<<"\n";
+
+    wfpm.perc = msgWeb.percent;
+    if (msgWeb.msg.empty())
+      wfpm.message = "no message";
+    else
+      wfpm.message = msgWeb.msg;
+
     msgWeb.dump();
 
     if (msgWeb.percent==100){

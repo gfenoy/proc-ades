@@ -5,10 +5,7 @@ version: "3.5"
 #sudo /usr/local/bin/docker-compose  -f docker-compose-dev.yml down
 services:
   ades:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: eoepca/proc-ades:build
+    image: eoepca/proc-ades:latest
     container_name: ades
     networks:
       - eoepca_network
@@ -20,6 +17,7 @@ services:
     volumes:
       # configuration volume
       - ./config:/var/etc/ades:ro
+      - ./:/build
 
 networks:
   eoepca_network:

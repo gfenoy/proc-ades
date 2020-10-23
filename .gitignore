@@ -53,6 +53,7 @@ notes
 *.pyc
 **.venv
 *.idea/
+work
 config/kubeconfig
 config/ades-config.env
 .vscode/cache/ipch/8b05243847f50199/mmap_address.bin
