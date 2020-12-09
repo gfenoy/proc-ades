@@ -1757,6 +1757,7 @@ loadServiceAndRun (maps ** myMap, service * s1, map * request_inputs,
               execute_t execute = (execute_t) GetProcAddress (so, fname);
 #else
               typedef int (*execute_t) (char ***, char ***, char ***);
+              fprintf(stderr,"********** dlsym(1): %s ****************",fname);
               execute_t execute = (execute_t) dlsym (so, fname);
 #endif
 #ifdef DEBUG
@@ -1810,6 +1811,7 @@ loadServiceAndRun (maps ** myMap, service * s1, map * request_inputs,
               execute_t execute =
                 (execute_t) GetProcAddress (so, r_inputs->value);
 #else
+              fprintf(stderr,"********** dlsym(2): %s ****************",r_inputs->value);
               execute_t execute = (execute_t) dlsym (so, r_inputs->value);
 #endif
 
