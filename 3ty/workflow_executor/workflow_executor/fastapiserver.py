@@ -265,10 +265,14 @@ def read_getstatus(service_id: str, run_id: str, prepare_id: str, job_id: str, r
     state = client.State()
     print('Status GET')
 
+
+    debugMode = os.getenv('DEBUG_MODE', "False")
+    debugMode = debugMode.lower() in ['true', '1', 'y', 'yes']
+
     resp_status = None
     from fastapi import status
     try:
-        resp_status = workflow_executor.status.run(namespace=namespace, workflow_name=workflow_name, state=state)
+        resp_status = workflow_executor.status.run(namespace=namespace, workflow_name=workflow_name,debugMode=debugMode, state=state)
 
         if resp_status["status"] == "Running":
             response.status_code = status.HTTP_200_OK
