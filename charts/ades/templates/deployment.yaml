@@ -74,8 +74,10 @@ spec:
               value: {{ .Values.workflowExecutor.processingMaxCores | quote }}
             - name: JOB_KEEPWORKSPACE
               value: {{ .Values.workflowExecutor.processingKeepWorkspace | quote }}
+            {{- if .Values.workflowExecutor.debugMode }}
             - name: DEBUG_MODE
               value: {{ .Values.workflowExecutor.debugMode | quote }}
+            {{- end }}
             - name: ADES_WFEXEC_MAINCWL
               value: /var/etc/ades/main.cwl
             - name: ADES_WFEXEC_STAGEIN_CWL
