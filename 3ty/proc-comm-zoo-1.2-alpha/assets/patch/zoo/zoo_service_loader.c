@@ -2878,7 +2878,7 @@ runRequest (map ** inputs)
 	      if(preference!=NULL && strcasecmp(preference->value,"respond-async")==0){
 #endif
 		fprintf(stderr,"Asynchronous call!\n");
-		char *fbkp, *fbkpid, *fbkpres, *fbkp1, *flog;
+		char *fbkp, *fbkpid, *fbkpres, *fbkp1, *flog, *flogpath;
 		FILE *f0, *f1;
 		int pid;
 #ifdef DEBUG
@@ -2941,13 +2941,28 @@ runRequest (map ** inputs)
 		    bmap->content=createMap("usid",usid->value);
 		    addToMap(bmap->content,"sid",tmpm->value);
 		    addIntToMap(bmap->content,"pid",zGetpid());
-	  
+
+
+            // log folder
+            char *logpath;
+            logpath =(char *)  malloc ((strlen (r_inputs->value)
+                                         + strlen (r_inputs1->value)
+                                         + strlen (usid->value) + 3) * sizeof (char));
+            sprintf (logpath, "%s/%s_%s", r_inputs->value, r_inputs1->value, usid->value);
+            // check if folder exists, if not create it
+            struct stat st = {0};
+            if (stat(logpath, &st) == -1) {
+                  mkdir(logpath, 0700);
+            }
+
+
 		    // Create PID file referencing the OS process identifier
-		    fbkpid =
-		      (char *)
-		      malloc ((strlen (r_inputs->value) +
-			       strlen (usid->value) + 7) * sizeof (char));
-		    sprintf (fbkpid, "%s/%s.pid", r_inputs->value, usid->value);
+		    fbkpid = (char *) malloc ((strlen (r_inputs->value)
+                                     + strlen (usid->value)
+                                     + strlen (r_inputs1->value)
+                                     + strlen (usid->value)
+                                     + 9) * sizeof (char));
+		    sprintf (fbkpid, "%s/%s_%s/%s.pid", r_inputs->value, r_inputs1->value, usid->value, usid->value);
 		    setMapInMaps (m, "lenv", "file.pid", fbkpid);
 
 		    f0 = freopen (fbkpid, "w+",stdout);
@@ -2955,30 +2970,36 @@ runRequest (map ** inputs)
 		    fflush(stdout);
 
 		    // Create SID file referencing the semaphore name
-		    fbkp =
-		      (char *)
-		      malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-			       strlen (usid->value) + 7) * sizeof (char));
-		    sprintf (fbkp, "%s/%s.sid", r_inputs->value, usid->value);
+		    fbkp = (char *) malloc ((strlen (r_inputs->value)
+                                   + strlen (r_inputs1->value)
+                                   + strlen (usid->value)
+                                   + strlen (r_inputs1->value)
+                                   + strlen (usid->value)
+                                   + 9) * sizeof (char));
+		    sprintf (fbkp, "%s/%s_%s/%s.sid", r_inputs->value, r_inputs1->value, usid->value, usid->value);
 		    setMapInMaps (m, "lenv", "file.sid", fbkp);
 		    FILE* f2 = freopen (fbkp, "w+",stdout);
 		    printf("%s",tmpm->value);
 		    fflush(f2);
 		    free(fbkp);
 
-		    fbkp =
-		      (char *)
-		      malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-			       strlen (usid->value) + 7) * sizeof (char));
-		    sprintf (fbkp, "%s/%s_%s.xml", r_inputs->value, r_inputs1->value,
-			     usid->value);
+		    fbkp = (char *) malloc ((strlen (r_inputs->value)
+                                   + strlen (usid->value)
+                                   + strlen (r_inputs1->value)
+                                   + strlen (r_inputs1->value)
+                                   + strlen (usid->value)
+                                   + 9) * sizeof (char));
+		    sprintf (fbkp, "%s/%s_%s/%s_%s.xml", r_inputs->value, r_inputs1->value, usid->value, r_inputs1->value, usid->value);
 		    setMapInMaps (m, "lenv", "file.responseInit", fbkp);
-		    flog =
-		      (char *)
-		      malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-			       strlen (usid->value) + 13) * sizeof (char));
-		    sprintf (flog, "%s/%s_%s_error.log", r_inputs->value,
-			     r_inputs1->value, usid->value);
+
+            // flog path
+            flog = (char *) malloc ((strlen (r_inputs->value)
+                                    + strlen (r_inputs1->value)
+                                    + strlen (r_inputs1->value)
+                                    + strlen (usid->value)
+                                    + strlen (usid->value) + 15) * sizeof (char));
+
+		    sprintf (flog, "%s/%s_%s/%s_%s_error.log", r_inputs->value, r_inputs1->value, usid->value, r_inputs1->value, usid->value);
 		    setMapInMaps (m, "lenv", "file.log", flog);
 #ifdef DEBUG
 		    fprintf (stderr, "RUN IN BACKGROUND MODE \n");
@@ -3006,12 +3027,13 @@ runRequest (map ** inputs)
 		    createStatusFile(m,eres);
 		    	  
 		  
-		    fbkp1 =
-		      (char *)
-		      malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-			       strlen (usid->value) + 15) * sizeof (char));
-		    sprintf (fbkp1, "%s/%s_final_%s.json", r_inputs->value,
-			     r_inputs1->value, usid->value);
+		    fbkp1 = (char *) malloc ((strlen (r_inputs->value)
+                                    + strlen (r_inputs1->value)
+                                    + strlen (r_inputs1->value)
+                                    + strlen (usid->value)
+                                    + strlen (usid->value)+ 17) * sizeof (char));
+
+            sprintf (fbkp1, "%s/%s_%s/%s_final_%s.json", r_inputs->value, r_inputs1->value, usid->value,  r_inputs1->value, usid->value);
 		    setMapInMaps (m, "lenv", "file.responseFinal", fbkp1);
 
 		    f1 = freopen (fbkp1, "w+", stdout);
@@ -3020,11 +3042,11 @@ runRequest (map ** inputs)
 		    if(serviceTypeMap!=NULL)
 		      setMapInMaps (m, "lenv", "serviceType", serviceTypeMap->value);
 
-		    char *flenv =
-		      (char *)
-		      malloc ((strlen (r_inputs->value) + 
-			       strlen (usid->value) + 12) * sizeof (char));
-		    sprintf (flenv, "%s/%s_lenv.cfg", r_inputs->value, usid->value);
+		    char *flenv = (char *) malloc ((strlen (r_inputs->value)
+                                          + strlen (r_inputs1->value)
+                                          + strlen (usid->value)
+                                          + strlen (usid->value) + 14) * sizeof (char));
+		    sprintf (flenv, "%s/%s_%s/%s_lenv.cfg", r_inputs->value,r_inputs1->value, usid->value, usid->value);
 		    maps* lenvMaps=getMaps(m,"lenv");
 		    dumpMapsToFile(lenvMaps,flenv,0);
 		    free(flenv);
@@ -3747,6 +3769,7 @@ runRequest (map ** inputs)
 	  // son : have to close the stdout, stdin and stderr to let the parent
 	  // process answer to http client.
 	  //
+
 	  map* usid = getMapFromMaps (m, "lenv", "uusid");
 	  map* tmpm = getMapFromMaps (m, "lenv", "osid");
 	  int cpid = atoi (tmpm->value);
@@ -3754,6 +3777,9 @@ runRequest (map ** inputs)
 	  r_inputs = getMapFromMaps (m, "main", "tmpPath");
 	  setMapInMaps (m, "lenv", "async","true");
 	  map* r_inputs1 = createMap("ServiceName", s1->name);
+
+
+
 
 	  // Create the filename for the result file (.res)
 	  fbkpres =
@@ -3790,19 +3816,24 @@ runRequest (map ** inputs)
 	  fflush(f2);
 	  free(fbkp);
 
-	  fbkp =
-	    (char *)
-	    malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-		     strlen (usid->value) + 7) * sizeof (char));
-	  sprintf (fbkp, "%s/%s_%s.xml", r_inputs->value, r_inputs1->value,
-		   usid->value);
+	  fbkp = (char *) malloc ((strlen (r_inputs->value)
+                             + strlen (r_inputs1->value)
+                             + strlen (usid->value)
+                             + strlen (r_inputs1->value)
+                             + strlen (usid->value)+ 9) * sizeof (char));
+	  sprintf (fbkp, "%s/%s_%s/%s_%s.xml", r_inputs->value, r_inputs1->value, usid->value, r_inputs1->value, usid->value);
 	  setMapInMaps (m, "lenv", "file.responseInit", fbkp);
-	  flog =
-	    (char *)
-	    malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-		     strlen (usid->value) + 13) * sizeof (char));
-	  sprintf (flog, "%s/%s_%s_error.log", r_inputs->value,
-		   r_inputs1->value, usid->value);
+
+      // flog path
+      flog = (char *) malloc ((strlen (r_inputs->value)
+                                 + strlen (r_inputs1->value)
+                                 + strlen (r_inputs1->value)
+                                 + strlen (usid->value)
+                                 + strlen (usid->value) + 15) * sizeof (char));
+
+      sprintf (flog, "%s/%s_%s/%s_%s_error.log", r_inputs->value, r_inputs1->value, usid->value, r_inputs1->value, usid->value);
+
+
 	  setMapInMaps (m, "lenv", "file.log", flog);
 #ifdef DEBUG
 	  fprintf (stderr, "RUN IN BACKGROUND MODE \n");
@@ -3844,9 +3875,13 @@ runRequest (map ** inputs)
 
 	  fbkp1 =
 	    (char *)
-	    malloc ((strlen (r_inputs->value) + strlen (r_inputs1->value) +
-		     strlen (usid->value) + 13) * sizeof (char));
-	  sprintf (fbkp1, "%s/%s_final_%s.xml", r_inputs->value,
+	    malloc ((strlen (r_inputs->value)
+                + strlen (r_inputs1->value)
+                + strlen (usid->value)
+                + strlen (r_inputs1->value)
+                + strlen (usid->value)
+                + 15) * sizeof (char));
+	  sprintf (fbkp1, "%s/%s_%s/%s_final_%s.xml", r_inputs->value,r_inputs1->value, usid->value,
 		   r_inputs1->value, usid->value);
 	  setMapInMaps (m, "lenv", "file.responseFinal", fbkp1);
 
@@ -3858,9 +3893,12 @@ runRequest (map ** inputs)
 
 	  char *flenv =
 	    (char *)
-	    malloc ((strlen (r_inputs->value) + 
-		     strlen (usid->value) + 12) * sizeof (char));
-	  sprintf (flenv, "%s/%s_lenv.cfg", r_inputs->value, usid->value);
+	    malloc ((strlen (r_inputs->value)
+                + strlen (usid->value)
+                + strlen (r_inputs->value)
+                + strlen (usid->value)
+                + 14) * sizeof (char));
+	  sprintf (flenv, "%s/%s_%s/%s_lenv.cfg", r_inputs->value, r_inputs->value, usid->value, usid->value);
 	  maps* lenvMaps=getMaps(m,"lenv");
 	  dumpMapsToFile(lenvMaps,flenv,0);
 	  free(flenv);

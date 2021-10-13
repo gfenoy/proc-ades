@@ -184,13 +184,17 @@ DeployResults deploy(std::string_view path, std::string_view content) {
 }
 
 void setStatus(maps *&conf, const char *status, const char *message) {
-
     map *usid = getMapFromMaps(conf, "lenv", "uusid");
     map *r_inputs = NULL;
+    map *r_inputs1 = NULL;
     r_inputs = getMapFromMaps(conf, "main", "tmpPath");
-    char *flenv = (char *)malloc(
-            (strlen(r_inputs->value) + strlen(usid->value) + 12) * sizeof(char));
-    sprintf(flenv, "%s/%s_lenv.cfg", r_inputs->value, usid->value);
+    r_inputs1 = getMapFromMaps(conf, "lenv", "Identifier");
+    char *flenv = (char *)malloc((strlen(r_inputs->value)
+                                  + strlen(usid->value)
+                                  + strlen(r_inputs1->value)
+                                  + strlen(usid->value)
+                                  + 14) * sizeof(char));
+    sprintf(flenv, "%s/%s_%s/%s_lenv.cfg", r_inputs->value, r_inputs1->value, usid->value, usid->value);
     setMapInMaps(conf, "lenv", "message", message);
     setMapInMaps(conf, "lenv", "status", status);
     maps *lenvMaps = getMaps(conf, "lenv");

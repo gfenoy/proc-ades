@@ -35,6 +35,9 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -1227,9 +1230,22 @@ extern "C" {
     map *tmpPath = getMapFromMaps (conf, "main", "tmpPath");
     map *cIdentifier = getMapFromMaps (conf, "lenv", "oIdentifier");
     map *sessId = getMapFromMaps (conf, "lenv", "usid");
+
+
+      // log folder
+      char *logpath;
+      logpath =(char *)  malloc ((strlen (tmpPath->value)
+                                   + strlen (cIdentifier->value)
+                                   + strlen (sessId->value) + 3) * sizeof (char));
+      sprintf (logpath, "%s/%s_%s", tmpPath->value, cIdentifier->value, sessId->value);
+      // check if folder exists, if not create it
+      struct stat st = {0};
+      if (stat(logpath, &st) == -1) {
+          mkdir(logpath, 0700);
+      }
+
     char tmp[1024];
-    sprintf(tmp,"%s/%s_%s.json",
-	    tmpPath->value,cIdentifier->value,sessId->value);
+    sprintf(tmp,"%s/%s_%s/%s_%s.json", tmpPath->value, cIdentifier->value, sessId->value, cIdentifier->value, sessId->value);
     FILE* foutput=fopen(tmp,"w+");
 
 

@@ -206,10 +206,9 @@ int main(int argc, char **argv, char **envp) {
   auto finalFile = std::make_unique<char[]>(M1024);
   std::memset(statusFile.get(), '\0', M1024);
 
-  sprintf(configFile.get(), "/var/www/_run/res/%s_lenv.cfg", processId.c_str());
-  sprintf(statusFile.get(), "/var/www/_run/res/%s.status", processId.c_str());
-  sprintf(finalFile.get(), "/var/www/_run/res/%s_final_%s.json",
-          serviceId.c_str(), processId.c_str());
+  sprintf(configFile.get(), "/var/www/_run/res/%s_%s/%s_lenv.cfg", serviceId.c_str(), processId.c_str(),  processId.c_str());
+  sprintf(statusFile.get(), "/var/www/_run/res/%s_%s/%s.status",  serviceId.c_str(), processId.c_str(), processId.c_str());
+  sprintf(finalFile.get(), "/var/www/_run/res/%s_%s/%s_final_%s.json", serviceId.c_str(), processId.c_str(), serviceId.c_str(), processId.c_str());
 
   INIReader info(std::string(configFile.get()));
   std::string theStatus = info.Get("lenv", "status", "none");
