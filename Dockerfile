@@ -31,7 +31,8 @@ RUN cd /opt/ && tar -zxvf zoo-project.tar.gz && rm -f zoo-project.tar.gz
 ### Apply patches
 RUN cp 3ty/proc-comm-zoo-1.2-alpha/assets/patch/zoo/response_print.c /opt/zoo-project/zoo-project/zoo-kernel/response_print.c            && \
     cp 3ty/proc-comm-zoo-1.2-alpha/assets/patch/zoo/zoo_service_loader.c /opt/zoo-project/zoo-project/zoo-kernel/zoo_service_loader.c    && \
-    cp 3ty/proc-comm-zoo-1.2-alpha/assets/patch/zoo/service_json.c /opt/zoo-project/zoo-project/zoo-kernel/service_json.c
+    cp 3ty/proc-comm-zoo-1.2-alpha/assets/patch/zoo/service_json.c /opt/zoo-project/zoo-project/zoo-kernel/service_json.c                && \
+    cp 3ty/proc-comm-zoo-1.2-alpha/assets/patch/zoo/service_internal.c /opt/zoo-project/zoo-project/zoo-kernel/service_internal.c
 ### Make libcgi
 RUN cd /opt/zoo-project/thirds/cgic206 && make libcgic.a && make install
 ### Configure ZOO

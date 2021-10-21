@@ -74,3 +74,4 @@ charts/ades/values.eoepca-creodias.yaml
 t2regcred.yaml
 
 workspace.code-workspace
+/charts/ades/values.eoepca-dev.terradue2.yaml
