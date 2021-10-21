@@ -23,9 +23,11 @@ RUN cd /opt/ && tar -zxvf zoo-project.tar.gz && rm -f zoo-project.tar.gz
 COPY  assets/patch/zoo/response_print.c /opt/zoo-project/zoo-project/zoo-kernel/response_print.c_
 COPY  assets/patch/zoo/zoo_service_loader.c /opt/zoo-project/zoo-project/zoo-kernel/zoo_service_loader.c_
 COPY  assets/patch/zoo/service_json.c /opt/zoo-project/zoo-project/zoo-kernel/service_json.c_
+COPY  assets/patch/zoo/service_internal.c /opt/zoo-project/zoo-project/zoo-kernel/service_internal.c_
 RUN  if [ -n "$addUserFeature" ]; then rm /opt/zoo-project/zoo-project/zoo-kernel/zoo_service_loader.c && mv /opt/zoo-project/zoo-project/zoo-kernel/zoo_service_loader.c_ /opt/zoo-project/zoo-project/zoo-kernel/zoo_service_loader.c; fi
 RUN  if [ -n "$addUserFeature" ]; then rm /opt/zoo-project/zoo-project/zoo-kernel/service_json.c && mv /opt/zoo-project/zoo-project/zoo-kernel/service_json.c_ /opt/zoo-project/zoo-project/zoo-kernel/service_json.c; fi
 RUN  if [ -n "$addUserFeature" ]; then rm /opt/zoo-project/zoo-project/zoo-kernel/response_print.c && mv /opt/zoo-project/zoo-project/zoo-kernel/response_print.c_ /opt/zoo-project/zoo-project/zoo-kernel/response_print.c; fi
+RUN  if [ -n "$addUserFeature" ]; then rm /opt/zoo-project/zoo-project/zoo-kernel/service_internal.c && mv /opt/zoo-project/zoo-project/zoo-kernel/service_internal.c_ /opt/zoo-project/zoo-project/zoo-kernel/service_internal.c; fi
 
 RUN cd /opt/zoo-project/thirds/cgic206 && make libcgic.a && make install
 

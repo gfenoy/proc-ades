@@ -231,10 +231,14 @@ int unlockFile(maps* conf,struct zooLock* s){
  */
 char* getStatusId(maps* conf,char* pid){
   map* r_inputs = getMapFromMaps (conf, "main", "tmpPath");
-  char* fbkpid =
-    (char *)
-    malloc ((strlen (r_inputs->value) + strlen (pid) + 7) * sizeof (char));
-  sprintf (fbkpid, "%s/%s.sid", r_inputs->value, pid);
+  map *cIdentifier = getMapFromMaps (conf, "lenv", "oIdentifier");
+  char* fbkpid = (char *) malloc ((strlen (r_inputs->value)
+                                     + strlen (pid)
+                                     + strlen (pid)
+                                     + strlen (cIdentifier->value)
+                                     + 11) * sizeof (char));
+
+  sprintf (fbkpid, "%s/%s_%s/%s.sid", r_inputs->value, cIdentifier->value,pid, pid);
   FILE* f0 = fopen (fbkpid, "r");
   if(f0!=NULL){
     long flen;
@@ -371,10 +375,10 @@ char* _getStatus(maps* conf,char* lid){
     malloc ((strlen (r_inputs->value)
             + strlen (lid)
             + strlen (lid)
-            + strlen (cIdentifier)
+            + strlen (cIdentifier->value)
             + 11) * sizeof (char));
 
-  sprintf (fbkpid, "%s/%s_%s/%s.status", r_inputs->value, cIdentifier,lid, lid);
+  sprintf (fbkpid, "%s/%s_%s/%s.status", r_inputs->value, cIdentifier->value,lid, lid);
   FILE* f0 = fopen (fbkpid, "r");
   if(f0!=NULL){    
     semid lockid = NULL;
@@ -431,10 +435,14 @@ char* _getStatus(maps* conf,char* lid){
 void unhandleStatus(maps *conf){	
   map* r_inputs = getMapFromMaps (conf, "main", "tmpPath");
   map* usid = getMapFromMaps (conf, "lenv", "usid");
-  char* fbkpid =
-    (char *) malloc ((strlen (r_inputs->value) + strlen (usid->value) + 9) 
-		     * sizeof (char));
-  sprintf (fbkpid, "%s/%s.status", r_inputs->value, usid->value);
+  map *cIdentifier = getMapFromMaps (conf, "lenv", "oIdentifier");
+  char* fbkpid = (char *) malloc ((strlen (r_inputs->value)
+                                     + strlen (usid->value)
+                                     + strlen (usid->value)
+                                     + strlen (cIdentifier->value)
+                                     + 11) * sizeof (char));
+
+  sprintf (fbkpid, "%s/%s_%s/%s.status", r_inputs->value, cIdentifier->value,usid->value, usid->value);
   zUnlink(fbkpid);
   free(fbkpid);
 }
@@ -450,11 +458,27 @@ int _updateStatus(maps *conf){
 	
   map* r_inputs = getMapFromMaps (conf, "main", "tmpPath");
   map* sid = getMapFromMaps (conf, "lenv", "usid");
-  
-  char* fbkpid =
-    (char *)
-    malloc ((strlen (r_inputs->value) + strlen (sid->value) + 9) * sizeof (char));
-  sprintf (fbkpid, "%s/%s.status", r_inputs->value, sid->value);
+  map *cIdentifier = getMapFromMaps (conf, "lenv", "oIdentifier");
+
+  // log folder
+  char *logpath;
+  logpath =(char *)  malloc ((strlen (r_inputs->value)
+                              + strlen (cIdentifier->value)
+                              + strlen (sid->value) + 3) * sizeof (char));
+  sprintf (logpath, "%s/%s_%s", r_inputs->value, cIdentifier->value, sid->value);
+  // check if folder exists, if not create it
+  struct stat st = {0};
+  if (stat(logpath, &st) == -1) {
+      mkdir(logpath, 0700);
+  }
+
+  char* fbkpid = (char *) malloc ((strlen (r_inputs->value)
+                                    + strlen (sid->value)
+                                    + strlen (sid->value)
+                                    + strlen (cIdentifier->value)
+                                    + 11) * sizeof (char));
+
+  sprintf (fbkpid, "%s/%s_%s/%s.status", r_inputs->value, cIdentifier->value,sid->value, sid->value);
   map* status=getMapFromMaps(conf,"lenv","status");
   map* msg=getMapFromMaps(conf,"lenv","message");
   if(status!=NULL && msg!=NULL &&
